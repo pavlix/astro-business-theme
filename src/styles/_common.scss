@@ -1,0 +1,153 @@
+// Shared structural styles for pavlix's brochure sites.
+// Colors and sizing are variables with !default so each site can set its
+// own palette before @import-ing this file.
+
+$narrow-viewport: 768px !default;
+$max-width: 900px !default;
+$horizontal-padding: 1.5rem !default;
+$paragraph-spacing: 1.25rem !default;
+
+$font-sans: 'Noto Sans', 'Verdana', sans-serif !default;
+
+$pure-white: white !default;
+$cloud-dancer: #f0efeb !default;
+$text-primary: #0a0a0a !default;
+$text-on-accent: #f0efeb !default;
+$text-on-accent-secondary: #f9c9b0 !default;
+$text-emphasis: #d35400 !default;
+$bg-color: #0a4f4f !default;
+$accent-color: #3FE0D0 !default;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: clamp(16px, 1.2vw + 0.5rem, 20px);
+}
+
+body {
+  background-color: $bg-color;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: $font-sans;
+  color: $cloud-dancer;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: $cloud-dancer;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+h2, h3, h4, h5, h6 {
+  margin-top: 1rem;
+}
+
+ul {
+  margin-block: 0.5em;
+  padding-left: 1.5em;
+}
+
+p, hr {
+  margin: $paragraph-spacing 0;
+}
+
+strong, em {
+  color: $text-emphasis;
+}
+
+a[href] {
+  color: $accent-color;
+}
+
+.container {
+  width: 100%;
+  padding: 0 $horizontal-padding;
+  max-width: $max-width;
+  margin: 0 auto;
+}
+
+header {
+  > div {
+    width: 100%;
+    max-width: $max-width;
+    margin: 0 auto;
+    padding: 0 $horizontal-padding;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    > h1 {
+      flex: 1 0 auto;
+      font-size: 1.4rem;
+      line-height: 4rem;
+    }
+
+    > input[type="checkbox"] {
+      display: none;
+      &:checked ~ nav { display: block; }
+    }
+
+    > label {
+      flex: 0 0 4rem;
+      display: none;
+      text-align: center;
+      font-size: 2rem;
+      line-height: 4rem;
+      @media (max-width: $narrow-viewport) {
+        display: block;
+      }
+    }
+
+    > nav {
+      display: flex;
+      gap: 2rem;
+
+      > a {
+        line-height: 3rem;
+        text-decoration: none;
+        color: $text-on-accent;
+
+        &.current {
+          color: $text-on-accent-secondary;
+        }
+        &:hover {
+          color: $text-on-accent-secondary;
+        }
+      }
+
+      @media (max-width: $narrow-viewport) {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        > a {
+          line-height: 3rem;
+          font-size: 1.6rem;
+        }
+      }
+    }
+  }
+}
+
+main {
+  flex: 1;
+  padding: 1em 0;
+}
+
+footer {
+  .container {
+    font-size: 0.9rem;
+    line-height: 2rem;
+    text-align: center;
+  }
+}
+
+article p {
+  text-align: justify;
+  hyphens: auto;
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@pavlix/astro-business-theme",
+  "version": "0.1.0",
+  "description": "Shared layout and structural Sass for pavlix's small brochure/marketing sites (Astro).",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "src",
+    "assets"
+  ],
+  "exports": {
+    "./layouts/*": "./src/layouts/*",
+    "./styles/*": "./src/styles/*",
+    "./assets/*": "./assets/*"
+  },
+  "peerDependencies": {
+    "astro": "^7.0.0"
+  }
+}
