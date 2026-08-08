@@ -228,14 +228,13 @@ article p {
 // paragraph/CTA at the top of a page — bigger type, room to breathe, no
 // top border (unlike ordinary h2 sections further down the page).
 .hero {
-  margin: 0 0 2.5rem;
-  padding-bottom: 1.5rem;
+  margin: 0 0 2rem;
 
   h2 {
     margin-top: 0;
     padding-top: 0;
     border-top: none;
-    font-size: clamp(1.6rem, 1rem + 2vw, 2.4rem);
+    font-size: clamp(1.4rem, 1rem + 1.4vw, 2rem);
   }
 
   p {
@@ -282,36 +281,31 @@ article p {
 }
 
 // A responsive list of items with a short "label" (e.g. a conference/year),
-// a title, and optional trailing links — used for talk listings. Mobile-
-// first: each entry stacks as a block by default. From $narrow-viewport up,
-// entries switch to a column layout (label | title | links) so they read
-// like a table without ever using an actual <table> — no risk of the
-// horizontal-overflow/tiny-text problems tables cause on narrow screens.
+// a title, and optional trailing links — used for talk listings. Simple
+// flex column with spacing between entries, no per-item borders/rules:
+// label/title/links just stack as a block, spaced apart with `gap`
+// instead of `border-bottom`, so a long list doesn't turn into a wall of
+// horizontal lines. Works the same at every width, no breakpoint needed.
 .entry-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
   list-style: none;
   margin: 0.5em 0;
   padding: 0;
 
   > li {
-    padding: 0.6rem 0;
-    border-bottom: 1px solid $panel-border;
-
-    &:last-child { border-bottom: none; }
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
   }
 
   .entry-label {
-    display: block;
     font-weight: bold;
   }
 
-  .entry-title {
-    display: block;
-  }
-
   .entry-links {
-    display: block;
     font-size: 0.9rem;
     color: $text-secondary;
-    margin-top: 0.15rem;
   }
 }
