@@ -225,11 +225,11 @@ article p {
 }
 
 // A short, visually distinct opening block. Used for the single intro
-// paragraph/CTA at the top of a page — bigger type, room to breathe, no
-// top border (unlike ordinary h2 sections further down the page).
+// paragraph/CTA at the top of a page: bigger type, no top border (unlike
+// ordinary h2 sections further down the page), no extra margin of its
+// own, so it doesn't add vertical space beyond what a normal
+// heading/paragraph already gets.
 .hero {
-  margin: 0 0 2rem;
-
   h2 {
     margin-top: 0;
     padding-top: 0;
