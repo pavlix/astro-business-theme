@@ -11,20 +11,39 @@ $paragraph-spacing: 1.25rem !default;
 
 $font-sans: 'Noto Sans', 'Verdana', sans-serif !default;
 
-$pure-white: white !default;
-$cloud-dancer: #f0efeb !default;
-$text-primary: #0a0a0a !default;
-$text-on-accent: #f0efeb !default;
-$text-on-accent-secondary: #f9c9b0 !default;
-$text-emphasis: #ff6b6b !default;
-$bg-color: #1a1a3d !default;
-$accent-color: #7c83fd !default;
+// Light page body (readable long-form text), with a per-site header
+// (a dark, accent-tinted band so each site's header reads as visually
+// distinct) and a uniform near-black footer band.
+// $accent-color/$text-emphasis are the per-site palette knobs — override
+// them with `@use ... with (...)` in a site's own main.scss. Defaults
+// below are devskills.eu's green PCB / circuit-board palette.
+$page-bg: #f5f8f3 !default;
+$text-primary: #16241c !default;
+$text-secondary: #3f5347 !default;
+
+$footer-bg: #1a1a1a !default;
+$text-on-dark: #f2f2f0 !default;
+
+$accent-color: #1f7a4a !default;
+$text-emphasis: #b8860b !default;
+
+// The header background is derived from each site's own accent color —
+// darkened so nav text stays readable — rather than a fixed color, so
+// every site's header is visually distinct without needing its own
+// override.
+$header-bg: color.adjust($accent-color, $lightness: -18%, $saturation: -10%) !default;
+
+// Hover/current-nav highlight in the header/footer — derived from the
+// site's own accent color so it doesn't need to be set separately.
+$text-on-dark-secondary: color.adjust($accent-color, $lightness: 25%, $saturation: -10%) !default;
 
 // Derived tones used for panels/cards and borders. Sites don't need to
 // set these — they're computed from the palette above so a card/panel
-// always reads as "a bit lighter than the page background."
-$panel-bg: color.adjust($bg-color, $lightness: 6%);
-$panel-border: color.adjust($bg-color, $lightness: 14%);
+// always reads as "a subtly distinct surface on the page background."
+$panel-bg: color.adjust($page-bg, $lightness: -3%);
+$panel-border: color.adjust($page-bg, $lightness: -12%);
+$header-border: color.adjust($header-bg, $lightness: 14%);
+$footer-border: color.adjust($footer-bg, $lightness: 14%);
 
 * {
   margin: 0;
@@ -38,17 +57,19 @@ html {
 }
 
 body {
-  background-color: $bg-color;
+  background-color: $page-bg;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   font-family: $font-sans;
-  color: $cloud-dancer;
+  color: $text-primary;
   line-height: 1.65;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: $cloud-dancer;
+  color: $text-primary;
   font-weight: bold;
   line-height: 1.3;
   margin-bottom: 0.6rem;
@@ -86,10 +107,12 @@ a[href] {
   color: $accent-color;
   text-decoration-color: color.adjust($accent-color, $alpha: -0.5);
   text-underline-offset: 0.15em;
+  overflow-wrap: break-word;
+  word-break: break-word;
   transition: color 0.15s ease, text-decoration-color 0.15s ease;
 
   &:hover {
-    color: $text-on-accent-secondary;
+    color: color.adjust($accent-color, $lightness: -12%);
     text-decoration-color: currentColor;
   }
 }
@@ -111,9 +134,9 @@ header {
   position: sticky;
   top: 0;
   z-index: 10;
-  background-color: color.adjust($bg-color, $alpha: -0.08);
+  background-color: color.adjust($header-bg, $alpha: -0.04);
   backdrop-filter: blur(6px);
-  border-bottom: 1px solid $panel-border;
+  border-bottom: 1px solid $header-border;
 
   > div {
     width: 100%;
@@ -129,6 +152,7 @@ header {
       font-size: 1.3rem;
       line-height: 3.5rem;
       margin-bottom: 0;
+      color: $text-on-dark;
     }
 
     > input[type="checkbox"] {
@@ -142,6 +166,7 @@ header {
       text-align: center;
       font-size: 2rem;
       line-height: 3.5rem;
+      color: $text-on-dark;
       @media (max-width: $narrow-viewport) {
         display: block;
       }
@@ -154,13 +179,13 @@ header {
       > a {
         line-height: 3rem;
         text-decoration: none;
-        color: $text-on-accent;
+        color: $text-on-dark;
 
         &.current {
-          color: $text-on-accent-secondary;
+          color: $text-on-dark-secondary;
         }
         &:hover {
-          color: $text-on-accent-secondary;
+          color: $text-on-dark-secondary;
         }
       }
 
@@ -184,13 +209,14 @@ main {
 
 footer {
   margin-top: 2rem;
-  border-top: 1px solid $panel-border;
+  background-color: $footer-bg;
+  border-top: 1px solid $footer-border;
 
   .container {
     font-size: 0.9rem;
     line-height: 2rem;
     text-align: center;
-    color: color.adjust($cloud-dancer, $alpha: -0.35);
+    color: color.adjust($text-on-dark, $alpha: -0.2);
   }
 }
 
@@ -215,7 +241,7 @@ article p {
   p {
     max-width: 60ch;
     font-size: 1.15rem;
-    color: color.adjust($cloud-dancer, $alpha: -0.08);
+    color: $text-secondary;
   }
 }
 
@@ -224,17 +250,19 @@ article p {
 .button {
   display: inline-block;
   margin-top: 0.5rem;
-  padding: 0.75em 1.5em;
-  border-radius: 999px;
-  background-color: $accent-color;
-  color: $text-on-accent;
-  font-weight: bold;
+  padding: 0.65em 1.5em;
+  border-radius: 0.375rem;
+  border: 1.5px solid $accent-color;
+  background-color: transparent;
+  color: $accent-color;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   text-decoration: none;
-  transition: background-color 0.15s ease, transform 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
 
   &:hover {
-    background-color: color.adjust($accent-color, $lightness: 8%);
-    color: $text-on-accent;
+    background-color: $accent-color;
+    color: $text-on-dark;
     transform: translateY(-1px);
   }
 }
@@ -251,4 +279,39 @@ article p {
 
   > :first-child { margin-top: 0; }
   > :last-child { margin-bottom: 0; }
+}
+
+// A responsive list of items with a short "label" (e.g. a conference/year),
+// a title, and optional trailing links — used for talk listings. Mobile-
+// first: each entry stacks as a block by default. From $narrow-viewport up,
+// entries switch to a column layout (label | title | links) so they read
+// like a table without ever using an actual <table> — no risk of the
+// horizontal-overflow/tiny-text problems tables cause on narrow screens.
+.entry-list {
+  list-style: none;
+  margin: 0.5em 0;
+  padding: 0;
+
+  > li {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid $panel-border;
+
+    &:last-child { border-bottom: none; }
+  }
+
+  .entry-label {
+    display: block;
+    font-weight: bold;
+  }
+
+  .entry-title {
+    display: block;
+  }
+
+  .entry-links {
+    display: block;
+    font-size: 0.9rem;
+    color: $text-secondary;
+    margin-top: 0.15rem;
+  }
 }
