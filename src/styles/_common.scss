@@ -289,12 +289,12 @@ article p {
     margin-top: 0;
     padding-bottom: 0;
     border-bottom: none;
-    font-size: clamp(1.4rem, 1rem + 1.4vw, 2rem);
+    font-size: clamp(1.45rem, 1.15rem + 2vw, 3rem);
   }
 
   p {
     max-width: $prose-max-width;
-    font-size: 1.05rem;
+    font-size: clamp(1.05rem, 0.95rem + 0.7vw, 1.5rem);
     color: $text-secondary;
   }
 
