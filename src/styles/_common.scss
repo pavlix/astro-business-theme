@@ -9,6 +9,14 @@ $max-width: 960px !default;
 $horizontal-padding: 1.5rem !default;
 $paragraph-spacing: 1.25rem !default;
 
+// Shared prose measure, in rem (not ch): ch is relative to the *local*
+// font-size, so two paragraphs at different font-sizes (e.g. regular
+// body text vs. the larger .hero intro) using the same ch number still
+// end up at different absolute widths, reading as inconsistent. A
+// fixed rem value is the same absolute width everywhere regardless of
+// local font-size.
+$prose-max-width: 38rem !default;
+
 $font-sans: 'Noto Sans', 'Verdana', sans-serif !default;
 
 // Light page body (readable long-form text), with a per-site header
@@ -66,6 +74,11 @@ body {
   line-height: 1.65;
   overflow-wrap: break-word;
   word-break: break-word;
+  // Safety net for .hero-dark's margin-based full-bleed breakout below:
+  // 100vw can be very slightly wider than 100% on some browsers when a
+  // scrollbar is present, which would otherwise introduce a tiny
+  // horizontal scrollbar.
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -76,10 +89,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h2 {
-  margin-top: 3rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid $panel-border;
+  margin-top: 2.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid $panel-border;
   font-size: 1.5rem;
+  // Jumping to a section (in-page nav, or an external "#section" link)
+  // would otherwise land the heading flush against the very top edge
+  // of the viewport, with no breathing room above it.
+  scroll-margin-top: 1rem;
 }
 
 h3, h4, h5, h6 {
@@ -130,75 +147,179 @@ hr {
   margin: 0 auto;
 }
 
-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background-color: color.adjust($header-bg, $alpha: -0.04);
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid $header-border;
+// Optional in-page "jump to section" nav for single-page sites with
+// several distinct sections. Not sticky, plain page colors: a quick
+// way to survey/jump to a section from the very top of the page.
+// Horizontal row on wide viewports; on narrow viewports it instead
+// collapses behind a hamburger toggle, since a horizontally-scrolling
+// strip isn't obviously scrollable and can silently cut off items
+// (e.g. hiding "Contact" just past the edge) without the user
+// realizing there's more to see.
+.section-nav {
+  background-color: $page-bg;
+  border-bottom: 1px solid $panel-border;
 
-  > div {
-    width: 100%;
-    max-width: $max-width;
-    margin: 0 auto;
-    padding: 0 $horizontal-padding;
+  > .container {
+    position: relative;
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
+    padding-block: 0.6rem;
+  }
 
-    > h1 {
-      flex: 1 0 auto;
-      font-size: 1.3rem;
-      line-height: 3.5rem;
-      margin-bottom: 0;
-      color: $text-on-dark;
-    }
+  .section-nav-toggle {
+    display: none;
 
-    > input[type="checkbox"] {
-      display: none;
-      &:checked ~ nav { display: block; }
-    }
-
-    > label {
-      flex: 0 0 4rem;
-      display: none;
-      text-align: center;
-      font-size: 2rem;
-      line-height: 3.5rem;
-      color: $text-on-dark;
-      @media (max-width: $narrow-viewport) {
-        display: block;
-      }
-    }
-
-    > nav {
+    &:checked ~ .section-nav-links {
       display: flex;
-      gap: 2rem;
+    }
+  }
 
-      > a {
-        line-height: 3rem;
-        text-decoration: none;
-        color: $text-on-dark;
+  .hamburger {
+    display: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: $text-secondary;
 
-        &.current {
-          color: $text-on-dark-secondary;
-        }
-        &:hover {
-          color: $text-on-dark-secondary;
-        }
+    @media (max-width: $narrow-viewport) {
+      display: block;
+    }
+  }
+
+  .section-nav-links {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    flex: 1;
+
+    // Collapsed by default on narrow viewports (revealed by the
+    // hamburger checkbox above), and laid out as a plain stacked
+    // dropdown, not a horizontally-scrolling row, once open.
+    @media (max-width: $narrow-viewport) {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      gap: 0;
+      overflow-x: visible;
+      white-space: normal;
+      background-color: $page-bg;
+      border-bottom: 1px solid $panel-border;
+      padding: 0 $horizontal-padding 0.6rem;
+    }
+  }
+
+  a {
+    color: $text-secondary;
+    font-size: 0.9rem;
+    text-decoration: none;
+
+    @media (max-width: $narrow-viewport) {
+      display: block;
+      padding-block: 0.4rem;
+    }
+
+    &:hover {
+      color: $accent-color;
+    }
+
+    // The last link is conventionally "Contact", the one action item
+    // among what's otherwise a plain jump-to-section list. Bold/accent
+    // colored at every width so it reads as a distinct action rather
+    // than just one more item in the list; on wide-enough viewports it
+    // also gets pushed all the way to the right, spaced away from the
+    // rest via `margin-left: auto`. In the narrow, stacked dropdown a
+    // top border/margin is used instead, since `margin-left` doesn't
+    // create meaningful separation in a column layout.
+    &:last-child {
+      font-weight: 600;
+      color: $accent-color;
+
+      @media (min-width: $narrow-viewport) {
+        margin-left: auto;
       }
 
       @media (max-width: $narrow-viewport) {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-        > a {
-          line-height: 3rem;
-          font-size: 1.6rem;
-        }
+        margin-top: 0.25rem;
+        padding-top: 0.65rem;
+        border-top: 1px solid $panel-border;
       }
     }
+  }
+}
+
+// Modifier for sites with few enough sections that a horizontally-wrapping
+// row reads fine at any width, so the hamburger collapse (and its extra
+// tap) isn't worth it: always show the links, wrapping to a second row
+// on narrow viewports instead of hiding behind a toggle.
+.section-nav.no-hamburger {
+  .hamburger {
+    display: none;
+  }
+
+  .section-nav-links {
+    display: flex !important;
+    flex-wrap: wrap;
+    row-gap: 0.4rem;
+
+    @media (max-width: $narrow-viewport) {
+      position: static;
+      overflow-x: visible;
+      white-space: normal;
+      background-color: transparent;
+      border-bottom: 0;
+      padding: 0;
+      // The hamburger variant's narrow rule stacks links in a column
+      // (a dropdown); this variant keeps them in the same wrapping row
+      // at every width, so that needs putting back explicitly.
+      flex-direction: row;
+      // The default 1.5rem gap (sized for a wide, single-line row) is
+      // more than a phone-width row of 3-4 short links needs, and was
+      // enough on its own to push the last link or two onto their own
+      // line even though they'd otherwise fit.
+      column-gap: 0.9rem;
+    }
+  }
+
+  a {
+    @media (max-width: $narrow-viewport) {
+      display: inline;
+      padding-block: 0;
+    }
+
+    &:last-child {
+      @media (max-width: $narrow-viewport) {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
+        // Same right-aligned treatment as the wide-viewport row (see
+        // the base rule's `@media (min-width: $narrow-viewport)`
+        // above): this variant keeps a single row at every width, so
+        // Contact should stay pinned to the right edge throughout
+        // rather than only once past the breakpoint.
+        margin-left: auto;
+      }
+    }
+  }
+}
+
+// Plain, non-sticky title bar. Deliberately not fixed/sticky: a
+// permanently on-screen band costs real vertical space on every
+// scroll position, especially on mobile, for a page that's otherwise
+// single-column brochure content read top to bottom once. The
+// `.section-nav` above it already provides ambient orientation
+// ("what page/section am I on") while scrolling.
+header {
+  background-color: $header-bg;
+  border-bottom: 1px solid $header-border;
+
+  h1 {
+    padding-block: 1rem;
+    font-size: 1.3rem;
+    margin-bottom: 0;
+    color: $text-on-dark;
   }
 }
 
@@ -220,47 +341,258 @@ footer {
   }
 }
 
+// Justified body copy (like eduskills.eu): reads well for longer-form
+// paragraphs, as long as hyphenation is on too, otherwise justification
+// alone tends to produce ugly rivers of whitespace, especially on
+// narrower columns. `hyphens: auto` needs the `lang` attribute set on
+// `<html>` to pick the right dictionary, which Base.astro already does.
+// No max-width here: headings (h2/h3) span the full container width for
+// their underline, so capping paragraph width narrower than that left a
+// visible gap on the right where the text stopped short of the
+// heading's line above/below it. Paragraphs now match that same width.
 article p {
-  max-width: 68ch;
+  text-align: justify;
+  hyphens: auto;
 }
 
 // A short, visually distinct opening block. Used for the single intro
 // paragraph/CTA at the top of a page: bigger type, no top border (unlike
 // ordinary h2 sections further down the page), no extra margin of its
 // own, so it doesn't add vertical space beyond what a normal
-// heading/paragraph already gets.
+// heading/paragraph already gets. Flex row so an optional photo
+// (.hero-photo) can sit alongside the text; stacks to a single column
+// on narrow viewports rather than squeezing both side by side. Photo
+// on the right on wide screens (`order`, not DOM position, so it still
+// stacks text-then-photo top-to-bottom on narrow viewports, reading
+// order first).
 .hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+
   h2 {
     margin-top: 0;
-    padding-top: 0;
-    border-top: none;
+    padding-bottom: 0;
+    border-bottom: none;
     font-size: clamp(1.4rem, 1rem + 1.4vw, 2rem);
   }
 
   p {
-    max-width: 60ch;
-    font-size: 1.15rem;
+    max-width: $prose-max-width;
+    font-size: 1.05rem;
     color: $text-secondary;
+  }
+
+  > .hero-text {
+    order: 1;
+    flex: 1 1 20rem;
+    max-width: $prose-max-width;
+    min-width: 0;
   }
 }
 
-// Pill-shaped call-to-action link, for the one or two actions per page
-// that should read as a button rather than an inline link.
-.button {
+// Rectangular (not circular) photo for a .hero. Capped fairly small
+// (14rem, not the "as big as possible" the site started with): a
+// bigger photo directly competes with the text column for width in the
+// hero (both together are wider than the container can comfortably
+// give both), reading as crowded rather than confident, and on mobile
+// (where it scales to the full column width before .hero-text even
+// starts) adds a lot of scroll distance before the real content.
+.hero-photo {
+  order: 2;
+  flex: 1 1 10rem;
+  max-width: 14rem;
+  width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  object-fit: cover;
+  display: block;
+}
+
+// Dark, bolder, full-bleed variant of .hero. Reserved for devskills.eu's
+// product/sales page, where a more visually dominant opening earns its
+// keep; simerda.eu's identity page stays on the plain, contained .hero
+// above. Pages using .hero-dark also pass `showHeader={false}` to
+// Base.astro: there's no separate colored header/title bar at all on
+// those pages, this is the one and only "title moment," carrying the
+// name (.hero-kicker), photo and headline together instead of
+// duplicating identity across two stacked blocks.
+//
+// Markup is `.hero-dark > .hero.container`: `.hero-dark` itself is the
+// full-bleed background (edge to edge, breaking out of the normal
+// container width via the margin-based breakout below), while the
+// nested `.hero.container` re-applies the normal container max-width
+// and centering so the actual photo/text lines up with the rest of the
+// page's content column. This margin trick (not width:100vw plus
+// position tricks) is the standard, well-supported way to break a
+// block out to full viewport width from inside a centered, padded
+// parent, without resorting to absolute positioning.
+.hero-dark {
+  // Fallback for browsers without gradient support; the gradient
+  // below replaces this everywhere it's understood.
+  background-color: $header-bg;
+  // A flat color put a dark background flush behind an already-dark
+  // photo and light text with nothing to make either stand out. This
+  // gradient keeps the upper-left/text corner at (or slightly below)
+  // the original flat tone, so the light heading/paragraph keep their
+  // contrast, while gently brightening toward the lower-right corner,
+  // roughly where `.hero-photo` ends up in both layouts (to the right
+  // on wide viewports, below the text after wrapping on narrow ones),
+  // giving the photo a soft glow to stand out against rather than
+  // blending into a perfectly flat backdrop. Diagonal rather than a
+  // strict horizontal or vertical gradient for two reasons: a purely
+  // horizontal one would only line up with the photo's position on
+  // wide viewports (it's at the bottom, not the side, once wrapped on
+  // narrow ones), and a plain axis-aligned gradient generally reads as
+  // flatter/more mechanical than a diagonal one.
+  background-image: linear-gradient(
+    135deg,
+    color.adjust($header-bg, $lightness: -8%) 0%,
+    $header-bg 45%,
+    color.adjust($header-bg, $lightness: 12%, $saturation: 8%) 100%
+  );
+  margin-inline: calc(50% - 50vw);
+  // Cancels `main`'s own top padding (see `main` above) so this sits
+  // flush against the section-nav above it, with no gap of plain page
+  // background (and no stray-looking seam) in between.
+  margin-top: -1em;
+  padding-block: 2rem;
+
+  h2, p {
+    color: $text-on-dark;
+  }
+
+  .hero-kicker {
+    margin: 0 0 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $text-on-dark-secondary;
+  }
+
+  // When the photo wraps to its own line on narrow viewports, center
+  // it there instead of leaving it stuck at the start edge: the text
+  // above is full-width at that point anyway, so centering the photo
+  // is a plain flexbox change that doesn't affect the text's own
+  // alignment. Targets the nested `.hero` (the actual flex container,
+  // see the markup note above `.hero-dark`), not `.hero-dark` itself,
+  // which is only the full-bleed background wrapper and isn't a flex
+  // container at all.
+  .hero {
+    @media (max-width: $narrow-viewport) {
+      justify-content: center;
+    }
+  }
+
+  .hero-photo {
+    // On wide viewports the photo sits beside a multi-line paragraph
+    // that's usually taller than the photo itself; centering it there
+    // (the plain .hero's default, via `align-items: center`) leaves it
+    // looking like it's "floating" mid-paragraph. Anchoring it to the
+    // top instead reads as more deliberately composed, like a portrait
+    // next to a headline. Narrow viewports are unaffected (`.hero`'s
+    // own `align-items: center` still applies there, but the photo is
+    // alone on its own wrapped line by then anyway, so cross-axis
+    // alignment doesn't change how it looks).
+    @media (min-width: $narrow-viewport) {
+      align-self: flex-start;
+    }
+
+    // A hard contrasting border works against blending in (it draws a
+    // sharp line right where we want the photo to recede into the
+    // background instead). Two linear-gradient masks (one per axis,
+    // intersected) fade each edge independently toward transparent,
+    // letting the dark hero background show through at the perimeter.
+    // Deliberately not a single radial/elliptical mask: that reads as a
+    // circular/oval vignette and stops looking like a rectangular photo
+    // at all; this keeps the photo's actual rectangular shape (corners
+    // included) while still softening all four edges. The fade zone is
+    // wide (35%/65% split, not a narrow band at the very edge): a
+    // narrow band reads as a thin "fade-in at the last second" rather
+    // than a genuinely gradual blend into the background.
+    border: none;
+    mask-image:
+      linear-gradient(to right, transparent, black 35%, black 65%, transparent),
+      linear-gradient(to bottom, transparent, black 35%, black 65%, transparent);
+    mask-composite: intersect;
+    -webkit-mask-image:
+      linear-gradient(to right, transparent, black 35%, black 65%, transparent),
+      linear-gradient(to bottom, transparent, black 35%, black 65%, transparent);
+    -webkit-mask-composite: source-in, source-in;
+  }
+}
+
+// Solid, filled call-to-action button (not an outline that only fills on
+// hover): the one or two actions per page that should stand out at a
+// glance, not just once someone happens to hover over them.
+//
+// Selector is `a.button`, not just `.button`: every button is an
+// `<a href>`, and the generic `a[href] { color: $accent-color }` rule
+// above has *higher* specificity than a bare class (type+attribute vs.
+// just a class), so `.button`'s own color was silently losing to it,
+// rendering accent-on-accent near-invisible text regardless of source
+// order. `a.button` matches that specificity so this rule's later
+// position in the file actually wins, as intended.
+// Wraps two or more `a.button`s that appear together (e.g. a primary
+// action plus a secondary one) so they get proper flex `gap` between
+// them instead of relying on incidental whitespace between inline
+// elements. Wraps on narrow viewports rather than forcing buttons to
+// shrink or overflow.
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+
+  // Markdown wraps loose inline content (like two adjacent `<a>`
+  // buttons with nothing else around them) in an implicit `<p>`. Left
+  // alone, that `<p>` becomes the row's one and only flex item, so
+  // `gap` above has nothing to apply between: the buttons would just
+  // sit side by side separated by an incidental whitespace character,
+  // not a real, consistent gap. `display: contents` removes the `<p>`
+  // from the box tree entirely (while keeping its children), so the
+  // buttons themselves become the flex items instead.
+  > p {
+    display: contents;
+  }
+
+  // Buttons already carry their own `margin-top` for when they follow
+  // a paragraph directly; inside a `.button-row` that's redundant with
+  // the row's own `gap` and would add uneven extra space above just
+  // some of the buttons if their line-wrapping ever differs. Not a
+  // direct-child selector: the implicit `<p>` above (now `display:
+  // contents`, but still present as an element for selector purposes)
+  // sits between `.button-row` and the buttons in the actual markup.
+  a.button {
+    margin-top: 0;
+  }
+}
+
+a.button {
   display: inline-block;
   margin-top: 0.5rem;
   padding: 0.65em 1.5em;
+  // Buttons on the same page tend to have similarly-lengthed labels
+  // ("Explore mentoring →", "Schedule a meeting →", "More about me →")
+  // but not identical ones; a shared min-width makes them read as one
+  // consistent row of same-sized actions instead of visibly different
+  // pill sizes, without forcing genuinely long labels to wrap awkwardly
+  // (min-width, not width, so it still grows for those).
+  min-width: 13rem;
+  text-align: center;
   border-radius: 0.375rem;
   border: 1.5px solid $accent-color;
-  background-color: transparent;
-  color: $accent-color;
+  background-color: $accent-color;
+  color: $text-on-dark;
   font-weight: 600;
   letter-spacing: 0.01em;
   text-decoration: none;
-  transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 
   &:hover {
-    background-color: $accent-color;
+    background-color: color.adjust($accent-color, $lightness: -10%);
+    border-color: color.adjust($accent-color, $lightness: -10%);
     color: $text-on-dark;
     transform: translateY(-1px);
   }
@@ -278,33 +610,77 @@ article p {
 
   > :first-child { margin-top: 0; }
   > :last-child { margin-bottom: 0; }
+
+  // Tighter gap between the heading and the paragraph below it than the
+  // default heading margin, so a short card reads as one compact unit
+  // instead of a headline floating above its text.
+  > h3 {
+    margin-bottom: 0.3rem;
+  }
+
+  // Justification (see `article p` above) reads fine for long-form
+  // paragraphs, but a short card blurb only has a line or two to work
+  // with: the justify algorithm stretches word spacing unevenly to
+  // fill the line, which on that little text reads as visibly uneven
+  // gaps rather than a clean paragraph. Left-align instead.
+  > p {
+    text-align: left;
+    hyphens: none;
+  }
+}
+
+// Keeps a short term (e.g. "C++") from ever being split across a line
+// break, whether at the space before/after it or, on narrow viewports,
+// mid-token from overflow-wrap/word-break above. Used by wrapping the
+// term itself, e.g. `<span class="nobreak">C++</span>`, not the
+// surrounding words, so normal wrapping around it is unaffected.
+.nobreak {
+  white-space: nowrap;
 }
 
 // A responsive list of items with a short "label" (e.g. a conference/year),
-// a title, and optional trailing links — used for talk listings. Simple
-// flex column with spacing between entries, no per-item borders/rules:
-// label/title/links just stack as a block, spaced apart with `gap`
-// instead of `border-bottom`, so a long list doesn't turn into a wall of
-// horizontal lines. Works the same at every width, no breakpoint needed.
+// a title, and optional trailing links — used for talk listings. Each
+// entry is its own subtly-shaded row (not the whole list boxed into one
+// big panel, that reads worse for a long list — see .panel above), laid
+// out on a two-row grid so the visual order (label + links on row one,
+// title below) doesn't depend on source order. Compact padding/gaps
+// keep a long list from feeling sparse.
 .entry-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.6rem;
   list-style: none;
   margin: 0.5em 0;
   padding: 0;
 
   > li {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "label links"
+      "title title";
+    column-gap: 1rem;
+    row-gap: 0.15rem;
+    background-color: $panel-bg;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.85rem;
   }
 
   .entry-label {
+    grid-area: label;
+    align-self: start;
     font-weight: bold;
   }
 
+  .entry-title {
+    grid-area: title;
+  }
+
   .entry-links {
+    grid-area: links;
+    align-self: start;
+    justify-self: end;
+    text-align: right;
     font-size: 0.9rem;
     color: $text-secondary;
   }
