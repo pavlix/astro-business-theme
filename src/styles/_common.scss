@@ -309,7 +309,7 @@ article p {
 .hero-photo {
   order: 2;
   flex: 1 1 10rem;
-  max-width: 14rem;
+  max-width: 17rem;
   width: 100%;
   height: auto;
   border-radius: 0.75rem;
@@ -321,8 +321,8 @@ article p {
 .hero-dark {
   background-color: $header-bg;
   background-image: linear-gradient(
-    135deg,
-    color.adjust($header-bg, $lightness: -8%) 0%,
+    135deg in oklch,
+    color.adjust($header-bg, $lightness: -6%) 0%,
     $header-bg 45%,
     color.adjust($header-bg, $lightness: 12%, $saturation: 8%) 100%
   );
@@ -352,6 +352,7 @@ article p {
   .hero-photo {
     @media (min-width: $narrow-viewport) {
       align-self: flex-start;
+      margin-top: 1rem;
     }
 
     border: none;
