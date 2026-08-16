@@ -43,15 +43,15 @@ const currentYear = new Date().getFullYear();
   <slot name="head" />
 </head>
 <body>
-  {showHeader ? (
+  {showHeader && (
     <header>
       <div class="container header-row">
         <h1>{siteTitle}</h1>
         {sections.length > 0 && (
-          <nav class={hamburgerNav ? "section-nav header-nav" : "section-nav header-nav no-hamburger"}>
-            <input type="checkbox" id="section-nav-toggle" class="section-nav-toggle" />
-            <label for="section-nav-toggle" class="hamburger" aria-label="Menu">☰</label>
-            <div class="section-nav-links">
+          <nav class="header-nav" aria-label="Menu">
+            <input type="checkbox" id="header-nav-toggle" class="header-nav-toggle" />
+            <label for="header-nav-toggle" class="hamburger" aria-label="Menu">☰</label>
+            <div class="header-nav-links">
               {sections.map((section) => (
                 <a href={section.url}>{section.name}</a>
               ))}
@@ -60,20 +60,20 @@ const currentYear = new Date().getFullYear();
         )}
       </div>
     </header>
-  ) : (
-    sections.length > 0 && (
-      <nav class={hamburgerNav ? "section-nav" : "section-nav no-hamburger"}>
-        <div class="container">
-          <input type="checkbox" id="section-nav-toggle" class="section-nav-toggle" />
-          <label for="section-nav-toggle" class="hamburger" aria-label="Menu">☰</label>
-          <div class="section-nav-links">
-            {sections.map((section) => (
-              <a href={section.url}>{section.name}</a>
-            ))}
-          </div>
+  )}
+
+  {sections.length > 0 && (
+    <nav class={hamburgerNav ? "section-nav" : "section-nav no-hamburger"}>
+      <div class="container">
+        <input type="checkbox" id="section-nav-toggle" class="section-nav-toggle" />
+        <label for="section-nav-toggle" class="hamburger" aria-label="Menu">☰</label>
+        <div class="section-nav-links">
+          {sections.map((section) => (
+            <a href={section.url}>{section.name}</a>
+          ))}
         </div>
-      </nav>
-    )
+      </div>
+    </nav>
   )}
 
   <main>

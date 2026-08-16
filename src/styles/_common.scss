@@ -244,6 +244,7 @@ hr {
 }
 
 header {
+  position: relative;
   background-color: $header-bg;
   border-bottom: 1px solid $header-border;
 
@@ -263,41 +264,82 @@ header {
   }
 }
 
-// Nav merged into the colored header bar (site title left, links
-// right), as opposed to the standalone `.section-nav` used when
-// `showHeader={false}` (see devskills.eu). No own background/border
-// (inherits the header's), and no `.container` wrapper since it's
-// already inside the header's own `.container.header-row`.
+// Narrow-viewport-only hamburger living in the colored header, next to
+// the site title, as opposed to the full section-nav row below (which
+// stays exactly as it was, unmoved, on wide viewports). Hidden by
+// default; the `@media (max-width: ...)` block below turns it on and
+// hides the standalone nav's own copy at the same width instead of
+// merging the two into one shared structure.
 .header-nav {
-  position: relative;
-  display: flex;
-  align-items: center;
-  background-color: transparent;
-  border-bottom: 0;
+  display: none;
+}
 
-  .hamburger {
-    color: $text-on-dark;
+@media (max-width: $narrow-viewport) {
+  .header-nav {
+    display: block;
+    position: relative;
   }
 
-  @media (min-width: $narrow-viewport) {
-    a {
-      color: $text-on-dark-secondary;
+  // The standalone section-nav (with its own hamburger) is only for
+  // wide viewports when a header is already showing its own hamburger;
+  // without a header (devskills.eu), the standalone nav's hamburger
+  // still handles narrow viewports as before, so this only hides it
+  // when a `header` element immediately precedes it.
+  header + .section-nav {
+    display: none;
+  }
+}
 
-      &:hover {
-        color: $text-on-dark;
-      }
+.header-nav {
+  .hamburger {
+    display: block;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: $text-on-dark;
+    cursor: pointer;
+  }
 
-      &:last-child {
-        color: $text-on-dark;
-      }
+  .header-nav-toggle {
+    display: none;
+
+    &:checked ~ .header-nav-links {
+      display: flex;
     }
   }
 
-  @media (max-width: $narrow-viewport) {
-    .section-nav-links {
-      left: auto;
-      right: 0;
-      min-width: 12rem;
+  // Anchored to the header itself (viewport-relative, via `right: 0`
+  // and the header's own padding), not to the small hamburger icon:
+  // a corner-of-the-screen panel is simpler and reads better than a
+  // dropdown trying to hug a tiny anchor element.
+  .header-nav-links {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    right: $horizontal-padding;
+    min-width: 10rem;
+    margin-top: 0.25rem;
+    padding: 0.5rem 1rem;
+    background-color: $page-bg;
+    border: 1px solid $panel-border;
+    border-radius: 0.375rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 20;
+
+    a {
+      padding-block: 0.4rem;
+      color: $text-secondary;
+      font-size: 0.9rem;
+      text-decoration: none;
+
+      &:hover {
+        color: $accent-color;
+      }
+
+      &:last-child {
+        font-weight: 600;
+        color: $accent-color;
+      }
     }
   }
 }
