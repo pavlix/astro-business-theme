@@ -247,11 +247,58 @@ header {
   background-color: $header-bg;
   border-bottom: 1px solid $header-border;
 
+  .header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-block: 0.8rem;
+  }
+
   h1 {
-    padding-block: 1rem;
     font-size: 1.3rem;
     margin-bottom: 0;
     color: $text-on-dark;
+  }
+}
+
+// Nav merged into the colored header bar (site title left, links
+// right), as opposed to the standalone `.section-nav` used when
+// `showHeader={false}` (see devskills.eu). No own background/border
+// (inherits the header's), and no `.container` wrapper since it's
+// already inside the header's own `.container.header-row`.
+.header-nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  border-bottom: 0;
+
+  .hamburger {
+    color: $text-on-dark;
+  }
+
+  @media (min-width: $narrow-viewport) {
+    a {
+      color: $text-on-dark-secondary;
+
+      &:hover {
+        color: $text-on-dark;
+      }
+
+      &:last-child {
+        color: $text-on-dark;
+      }
+    }
+  }
+
+  @media (max-width: $narrow-viewport) {
+    .section-nav-links {
+      left: auto;
+      right: 0;
+      min-width: 12rem;
+    }
   }
 }
 
@@ -285,6 +332,10 @@ article p {
   align-items: center;
   gap: 1.5rem;
 
+  @media (max-width: $narrow-viewport) {
+    justify-content: center;
+  }
+
   h2 {
     margin-top: 0;
     padding-bottom: 0;
@@ -315,6 +366,15 @@ article p {
   border-radius: 0.75rem;
   object-fit: cover;
   display: block;
+  border: none;
+  mask-image:
+    linear-gradient(to right, transparent, black 35%, black 65%, transparent),
+    linear-gradient(to bottom, transparent, black 35%, black 65%, transparent);
+  mask-composite: intersect;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, black 35%, black 65%, transparent),
+    linear-gradient(to bottom, transparent, black 35%, black 65%, transparent);
+  -webkit-mask-composite: source-in, source-in;
 
   @media (min-width: $narrow-viewport) {
     align-self: flex-start;
@@ -346,24 +406,6 @@ article p {
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: $text-on-dark-secondary;
-  }
-
-  .hero {
-    @media (max-width: $narrow-viewport) {
-      justify-content: center;
-    }
-  }
-
-  .hero-photo {
-    border: none;
-    mask-image:
-      linear-gradient(to right, transparent, black 35%, black 65%, transparent),
-      linear-gradient(to bottom, transparent, black 35%, black 65%, transparent);
-    mask-composite: intersect;
-    -webkit-mask-image:
-      linear-gradient(to right, transparent, black 35%, black 65%, transparent),
-      linear-gradient(to bottom, transparent, black 35%, black 65%, transparent);
-    -webkit-mask-composite: source-in, source-in;
   }
 }
 
