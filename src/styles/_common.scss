@@ -315,6 +315,11 @@ article p {
   border-radius: 0.75rem;
   object-fit: cover;
   display: block;
+
+  @media (min-width: $narrow-viewport) {
+    align-self: flex-start;
+    margin-top: 1rem;
+  }
 }
 
 // Markup: `.hero-dark > .hero.container`, see the theme-css skill.
@@ -350,11 +355,6 @@ article p {
   }
 
   .hero-photo {
-    @media (min-width: $narrow-viewport) {
-      align-self: flex-start;
-      margin-top: 1rem;
-    }
-
     border: none;
     mask-image:
       linear-gradient(to right, transparent, black 35%, black 65%, transparent),
