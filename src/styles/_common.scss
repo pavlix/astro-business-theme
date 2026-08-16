@@ -283,9 +283,9 @@ header {
   // The standalone section-nav (with its own hamburger) is only for
   // wide viewports when a header is already showing its own hamburger;
   // without a header (devskills.eu), the standalone nav's hamburger
-  // still handles narrow viewports as before, so this only hides it
-  // when a `header` element immediately precedes it.
-  header + .section-nav {
+  // still handles narrow viewports as before. `.has-header-nav` is
+  // only added when `showHeader` is true, regardless of DOM order.
+  .section-nav.has-header-nav {
     display: none;
   }
 }
