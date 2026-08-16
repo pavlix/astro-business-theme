@@ -23,7 +23,6 @@ $text-on-dark: #f2f2f0 !default;
 
 $accent-color: #1f7a4a !default;
 $text-emphasis: #b8860b !default;
-$neutral-grey: #5a5a5a !default;
 
 $header-bg: color.adjust($accent-color, $lightness: -18%, $saturation: -10%) !default;
 $text-on-dark-secondary: color.adjust($accent-color, $lightness: 25%, $saturation: -10%) !default;
@@ -406,18 +405,21 @@ a.button {
   }
 }
 
-// Neutral grey for a button leading off to a site outside pavlix's own
-// three (simerda.eu/devskills.eu/datachange.cz), e.g. a university or
-// partner page: visually says "you're leaving" without implying it's a
-// second, equally-weighted CTA. Fixed grey rather than accent-derived,
-// and not meant to be overridden per-site, unlike `.button-alt` below.
+// Outlined/ghost variant for a button leading off to a site outside
+// pavlix's own three (simerda.eu/devskills.eu/datachange.cz), e.g. a
+// university or partner page: same accent color as the rest of the
+// page, but hollow (border + text only, no fill), so it reads as
+// lower-emphasis without introducing an unrelated grey. Not meant to
+// be overridden per-site, unlike `.button-alt` below.
 a.button-external {
-  border-color: $neutral-grey;
-  background-color: $neutral-grey;
+  background-color: transparent;
+  border-color: $accent-color;
+  color: $accent-color;
 
   &:hover {
-    background-color: color.adjust($neutral-grey, $lightness: -10%);
-    border-color: color.adjust($neutral-grey, $lightness: -10%);
+    background-color: $accent-color;
+    border-color: $accent-color;
+    color: $text-on-dark;
   }
 }
 
