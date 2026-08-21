@@ -528,8 +528,8 @@ a.button-external {
   margin: 1.5rem 0;
   padding: 1.5rem 1.75rem;
   border-radius: 0.75rem;
-  background-color: color.mix(white, $accent-color, 92%);
-  border: 1px solid color.mix(white, $accent-color, 78%);
+  background-color: color.mix(white, $accent-color, 85%);
+  border: 1px solid color.mix(white, $accent-color, 65%);
 
   // Markdown wraps each field in its own `<p>`, which would otherwise
   // stack the global `p` margin on top of this flex `gap`, roughly
