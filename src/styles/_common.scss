@@ -543,9 +543,8 @@ a.button-external {
     font-weight: 600;
   }
 
-  .optional {
-    font-weight: 400;
-    color: $text-on-dark-secondary;
+  .required {
+    color: $text-emphasis;
   }
 
   input,
