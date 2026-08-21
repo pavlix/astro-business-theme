@@ -523,6 +523,19 @@ a.button-external {
   max-width: 32rem;
   margin: 1.5rem 0;
 
+  // Markdown wraps each field in its own `<p>`, which would otherwise
+  // stack the global `p` margin on top of this flex `gap`, roughly
+  // doubling the space between fields.
+  > p {
+    margin: 0;
+  }
+
+  // `button.button` normally has `margin-top` for spacing after
+  // prose text; the flex `gap` above already handles that here.
+  button.button {
+    margin-top: 0;
+  }
+
   label {
     display: flex;
     flex-direction: column;
