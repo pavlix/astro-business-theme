@@ -465,8 +465,10 @@ article p {
   }
 }
 
-// `a.button`, not `.button`, see the theme-css skill.
-a.button {
+// `a.button`, not `.button`, see the theme-css skill. `button.button`
+// is included too, for a real `<button>` submitting a `.contact-form`.
+a.button,
+button.button {
   display: inline-block;
   margin-top: 0.5rem;
   padding: 0.65em 1.5em;
@@ -476,9 +478,11 @@ a.button {
   border: 1.5px solid $accent-color;
   background-color: $accent-color;
   color: $text-on-dark;
+  font: inherit;
   font-weight: 600;
   letter-spacing: 0.01em;
   text-decoration: none;
+  cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 
   &:hover {
@@ -504,6 +508,58 @@ a.button-external {
     background-color: $accent-color;
     border-color: $accent-color;
     color: $text-on-dark;
+  }
+}
+
+// Plain stacked contact form (name/email/message and similar), not a
+// `.panel`: matches the AGENTS.md preference for stacked blocks over
+// boxed cards, and reads as part of the page rather than a separate
+// widget. Labels stack above their inputs at every width, so nothing
+// needs its own narrow-viewport handling.
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 32rem;
+  margin: 1.5rem 0;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-weight: 600;
+  }
+
+  .optional {
+    font-weight: 400;
+    color: $text-on-dark-secondary;
+  }
+
+  input,
+  textarea {
+    font: inherit;
+    padding: 0.6em 0.8em;
+    border: 1px solid $panel-border;
+    border-radius: 0.375rem;
+    background-color: $page-bg;
+    color: inherit;
+
+    &:focus {
+      outline: 2px solid $accent-color;
+      outline-offset: 1px;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 6rem;
+  }
+
+  // Honeypot field for spam bots, see Netlify's forms spam filter docs:
+  // visually hidden but still readable/fillable by non-visual bots.
+  .form-honeypot {
+    position: absolute;
+    left: -9999px;
   }
 }
 
