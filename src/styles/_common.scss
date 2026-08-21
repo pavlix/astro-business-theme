@@ -511,17 +511,25 @@ a.button-external {
   }
 }
 
-// Plain stacked contact form (name/email/message and similar), not a
-// `.panel`: matches the AGENTS.md preference for stacked blocks over
-// boxed cards, and reads as part of the page rather than a separate
-// widget. Labels stack above their inputs at every width, so nothing
-// needs its own narrow-viewport handling.
+// A boxed block, tinted with the page's own accent color rather than
+// the neutral `$panel-bg` used for `.panel`: unlike the `.entry-list`
+// case in the theme-css skill (many similar rows, better unboxed), a
+// contact form is one distinct, self-contained action, so calling it
+// out as its own visually-tinted block reads as intentional instead
+// of just more body copy. `color.mix(white, $accent-color, ...)`
+// rather than `color.adjust($lightness: ...)` so the tint scales
+// correctly regardless of how dark or light each site's own accent
+// color already is.
 .contact-form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   max-width: 32rem;
   margin: 1.5rem 0;
+  padding: 1.5rem 1.75rem;
+  border-radius: 0.75rem;
+  background-color: color.mix(white, $accent-color, 92%);
+  border: 1px solid color.mix(white, $accent-color, 78%);
 
   // Markdown wraps each field in its own `<p>`, which would otherwise
   // stack the global `p` margin on top of this flex `gap`, roughly
